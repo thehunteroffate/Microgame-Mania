@@ -1,0 +1,91 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Ballmovement : MonoBehaviour
+{
+
+ public float Sp;
+    public float esp;
+    public float maxsp;
+
+    public bool p1sr = true;
+    private int hitcounter = 0;
+
+    private Rigidbody2D rb;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        StartCoroutine(launch());
+    }
+
+    private void restarB()
+    {
+        rb.velocity = Vector2.zero;
+        transform.position = Vector2.zero;
+    }
+
+    public IEnumerator launch()
+    {
+        restarB();
+        hitcounter = 0;
+        yield return new WaitForSeconds(1);
+
+        if (p1sr)
+        {
+            moveball(new Vector2(-1, 0));
+        }
+        else
+        {
+            moveball(new Vector2(1, 0));
+        }
+    }
+
+    public void moveball(Vector2 direction)
+    {
+        direction = direction.normalized;
+        float bsp = Sp + hitcounter * esp;
+        rb.velocity = direction * bsp;
+    }
+
+    public void increasehitcounter()
+    {
+        if (hitcounter * esp < maxsp)
+        {
+            hitcounter++;
+        }
+    }
+
+    void Update()
+    {
+        Vector3 pos = transform.position;
+
+        float topBoundary = 4.5f;
+        float bottomBoundary = -4.5f;
+        float leftBoundary = -8.5f;
+        float rightBoundary = 8.5f;
+
+        if (pos.y > topBoundary)
+        {
+            pos.y = topBoundary;
+            rb.velocity = new Vector2(rb.velocity.x, -Mathf.Abs(rb.velocity.y));
+        }
+        else if (pos.y < bottomBoundary)
+        {
+            pos.y = bottomBoundary;
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Abs(rb.velocity.y));
+        }
+
+        if (pos.x < leftBoundary || pos.x > rightBoundary)
+        {
+            StartCoroutine(launch());
+            return;
+        }
+
+        transform.position = pos;
+    }
+
+}
