@@ -1,0 +1,226 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Cinemachine;
+using UnityEngine.InputSystem;
+
+public class bongo : MonoBehaviour
+{
+    public float velocidad;
+    private Rigidbody2D rb;
+    private Vector2 direccion;
+    private bool mirandoDerecha = true;
+    private bool puedeMoverse = true;
+    private Vector3 posicionOriginalCamara;
+    private Camera camara;
+    private CinemachineVirtualCamera cinemachineCam;
+    private Controles controles;
+
+    void Awake()
+    {
+        controles = new Controles();
+    }
+
+    void OnEnable()
+    {
+        controles.Enable();
+    }
+
+    void OnDisable()
+    {
+        controles.Disable();
+    }
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        camara = Camera.main;
+        cinemachineCam = FindObjectOfType<CinemachineVirtualCamera>();
+        posicionOriginalCamara = camara.transform.position;
+        StartCoroutine(MoverCamaraInicial());
+
+        // Asigna los callbacks para el movimiento
+        controles.P1.Movimiento.performed += ctx => direccion = ctx.ReadValue<Vector2>();
+        controles.P1.Movimiento.performed += ctx => direccion = Vector2.zero;
+    }
+
+    void Update()
+    {
+        if (puedeMoverse)
+        {
+            input();
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (puedeMoverse)
+        {
+            mov();
+            Voltear(direccion.x);
+        }
+    }
+
+    void input()
+    {
+        // Lee el valor de las acciones de movimiento del gamepad
+        float dx = controles.Base.Mover.ReadValue<Vector2>().x;
+        float dy = controles.Base.Mover.ReadValue<Vector2>().y;
+
+        direccion = new Vector2(dx, dy).normalized;
+    }
+
+    void mov()
+    {
+        rb.velocity = new Vector2(direccion.x * velocidad, direccion.y * velocidad);
+    }
+
+    void Voltear(float horizontal)
+    {
+        if ((horizontal > 0 && !mirandoDerecha) || (horizontal < 0 && mirandoDerecha))
+        {
+            mirandoDerecha = !mirandoDerecha;
+
+            Vector3 escala = transform.localScale;
+            escala.x *= -1;
+            transform.localScale = escala;
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Activador"))
+        {
+            GameObject[] objetosParaAbrir = GameObject.FindGameObjectsWithTag("abrir");
+
+            if (objetosParaAbrir.Length > 0)
+            {
+                foreach (GameObject obj in objetosParaAbrir)
+                {
+                    Destroy(obj);
+                    Debug.Log("Objeto destruido: " + obj.name);
+                }
+            }
+        }
+
+        if (other.gameObject.layer == LayerMask.NameToLayer("Activador2"))
+        {
+            GameObject[] objetosParaAbrir = GameObject.FindGameObjectsWithTag("abrir2");
+
+            if (objetosParaAbrir.Length > 0)
+            {
+                foreach (GameObject obj in objetosParaAbrir)
+                {
+                    Destroy(obj);
+                    Debug.Log("Objeto destruido: " + obj.name);
+                }
+            }
+        }
+
+        if (other.gameObject.layer == LayerMask.NameToLayer("Activador3"))
+        {
+            GameObject[] objetosParaAbrir = GameObject.FindGameObjectsWithTag("abrir3");
+
+            if (objetosParaAbrir.Length > 0)
+            {
+                foreach (GameObject obj in objetosParaAbrir)
+                {
+                    Destroy(obj);
+                    Debug.Log("Objeto destruido: " + obj.name);
+                }
+            }
+        }
+    }
+
+    IEnumerator MoverCamaraInicial()
+    {
+        GameObject objetoFin = GameObject.FindGameObjectWithTag("trigger1");
+        GameObject objetoFin2 = GameObject.FindGameObjectWithTag("trigger2");
+
+        puedeMoverse = false;
+
+        if (objetoFin != null)
+        {
+            Vector3 posicionFin = objetoFin.transform.position;
+            posicionFin.z = camara.transform.position.z;
+
+            float duracion = 4.0f;
+            float tiempoTranscurrido = 0.0f;
+
+            if (cinemachineCam != null)
+            {
+                cinemachineCam.enabled = false;
+            }
+
+            while (tiempoTranscurrido < duracion)
+            {
+                camara.transform.position = Vector3.Lerp(posicionOriginalCamara, posicionFin, tiempoTranscurrido / duracion);
+                tiempoTranscurrido += Time.deltaTime;
+                yield return null;
+            }
+
+            camara.transform.position = posicionFin;
+
+            yield return new WaitForSeconds(2.0f);
+
+            tiempoTranscurrido = 0.0f;
+
+            while (tiempoTranscurrido < duracion)
+            {
+                camara.transform.position = Vector3.Lerp(posicionFin, posicionOriginalCamara, tiempoTranscurrido / duracion);
+                tiempoTranscurrido += Time.deltaTime;
+                yield return null;
+            }
+
+            camara.transform.position = posicionOriginalCamara;
+
+            if (cinemachineCam != null)
+            {
+                cinemachineCam.enabled = true;
+            }
+
+        }
+        else if (objetoFin2)
+        {
+            Vector3 posicionFin = objetoFin2.transform.position;
+            posicionFin.z = camara.transform.position.z;
+
+            float duracion = 4.0f;
+            float tiempoTranscurrido = 0.0f;
+
+            if (cinemachineCam != null)
+            {
+                cinemachineCam.enabled = false;
+            }
+
+            while (tiempoTranscurrido < duracion)
+            {
+                camara.transform.position = Vector3.Lerp(posicionOriginalCamara, posicionFin, tiempoTranscurrido / duracion);
+                tiempoTranscurrido += Time.deltaTime;
+                yield return null;
+            }
+
+            camara.transform.position = posicionFin;
+
+            yield return new WaitForSeconds(2.0f);
+
+            tiempoTranscurrido = 0.0f;
+
+            while (tiempoTranscurrido < duracion)
+            {
+                camara.transform.position = Vector3.Lerp(posicionFin, posicionOriginalCamara, tiempoTranscurrido / duracion);
+                tiempoTranscurrido += Time.deltaTime;
+                yield return null;
+            }
+
+            camara.transform.position = posicionOriginalCamara;
+
+            if (cinemachineCam != null)
+            {
+                cinemachineCam.enabled = true;
+            }
+        }
+
+        puedeMoverse = true;
+    }
+}
