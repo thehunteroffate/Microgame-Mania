@@ -1,0 +1,56 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
+
+public class Music : MonoBehaviour
+{
+
+private static Music instance;
+
+private Music currentMusic;
+
+    void Start()
+    {
+        // Mantenemos una referencia al objeto Music en la escena actual.
+        currentMusic = FindObjectOfType<Music>();
+        PlayCurrentMusic();
+        
+        // Registramos el evento para manejar la carga de escenas.
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Detenemos la música anterior.
+        StopCurrentMusic();
+
+        // Mantenemos una referencia al nuevo objeto Music en la escena cargada.
+        currentMusic = FindObjectOfType<Music>();
+        PlayCurrentMusic();
+    }
+
+    void PlayCurrentMusic()
+    {
+        // Verificamos si hay un objeto Music y si tiene un componente AudioSource.
+        if (currentMusic != null && currentMusic.GetComponent<AudioSource>() != null)
+        {
+            // Reproducimos la música de la escena.
+            AudioSource audioSource = currentMusic.GetComponent<AudioSource>();
+            audioSource.Play();
+        }
+    }
+
+    void StopCurrentMusic()
+    {
+        // Verificamos si hay un objeto Music y si tiene un componente AudioSource.
+        if (currentMusic != null && currentMusic.GetComponent<AudioSource>() != null)
+        {
+            // Detenemos la música anterior.
+            AudioSource audioSource = currentMusic.GetComponent<AudioSource>();
+            audioSource.Stop();
+        }
+    }
+
+}
