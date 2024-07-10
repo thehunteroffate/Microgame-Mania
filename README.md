@@ -7,3 +7,5 @@ lenguaje de programacion C# como proyecto final de la clase de geometria computa
 nota importante: debido a que para la realizacion de este juego utilice musica de otros videjuegos ya que no
 soy ningun compositor ni experto en musica no se puede monetizar asi que es de uso unico y exclusivo para el proyecto de la clase, todos los derechos
 de la musica corresponden a sus correspondientes creadores.
+
+debido al motivo de que la musica tiene derechos de autor lo dejo privado
