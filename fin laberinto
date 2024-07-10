@@ -1,0 +1,76 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using TMPro;
+
+public class fin : MonoBehaviour
+{
+private bool p = false; // Indicador de pausa
+    public int next; // Índice de la siguiente escena
+    public GameObject Gameovercanvas; // Canvas de Game Over
+    public GameObject botonpausa; // Botón de pausa
+
+    public TMP_Text GameoverText; // texto en el canvas de Game Over usando TextMeshPro
+    public string minigameId; // Identificador único para cada minijuego
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        next = SceneManager.GetActiveScene().buildIndex + 1;
+        Gameovercanvas.SetActive(false);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        // Aquí puedes añadir lógica de actualización si es necesario
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider2D)
+    {
+        if (collider2D.tag == "trigger1")
+        {
+            GameoverText.text = "¡Has pasado el laberinto!";
+            EndGame();
+        }
+
+        if (collider2D.tag == "trigger2")
+        {
+            GameoverText.text = "¡Has completado todos los laberintos!";
+            EndGame();
+        }
+    }
+
+    private void EndGame()
+    {
+        Gameovercanvas.SetActive(true); // Activa el canvas de Game Over
+        botonpausa.SetActive(false); // Desactiva el botón de pausa
+        DesbloquearNivel(); // Desbloquea el siguiente nivel
+        pausa(); // Pausa el juego
+    }
+
+    private void DesbloquearNivel()
+    {
+        next = SceneManager.GetActiveScene().buildIndex + 1;
+        string levelKey = minigameId + "_levelat";
+
+        if (next > PlayerPrefs.GetInt(levelKey, 3)) // Establece el valor predeterminado en 3
+        {
+            PlayerPrefs.SetInt(levelKey, next);
+            PlayerPrefs.Save();
+        }
+    }
+
+    public void pausa()
+    {
+        p = true;
+        Time.timeScale = 0f; // Pausa el juego
+    }
+
+    public void siguiente()
+    {
+        SceneManager.LoadScene(next);
+    }
+
+}
