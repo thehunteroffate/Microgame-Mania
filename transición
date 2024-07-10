@@ -1,0 +1,48 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public class transicion : MonoBehaviour
+{
+    public Image fadeImage;
+    public float fadeDuration = 1.0f;
+
+    void Start()
+    {
+        StartCoroutine(FadeIn());
+    }
+
+    public void MoveToScene(int sceneID)
+    {
+        StartCoroutine(FadeOut(sceneID));
+    }
+
+    private IEnumerator FadeIn()
+    {
+        float elapsedTime = 0.0f;
+        Color color = fadeImage.color;
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            color.a = 1.0f - Mathf.Clamp01(elapsedTime / fadeDuration);
+            fadeImage.color = color;
+            yield return null;
+        }
+    }
+
+    private IEnumerator FadeOut(int sceneID)
+    {
+        float elapsedTime = 0.0f;
+        Color color = fadeImage.color;
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            color.a = Mathf.Clamp01(elapsedTime / fadeDuration);
+            fadeImage.color = color;
+            yield return null;
+        }
+        SceneManager.LoadScene(sceneID);
+    }
+}
