@@ -8,4 +8,5 @@ nota importante: debido a que para la realizacion de este juego utilice musica d
 soy ningun compositor ni experto en musica no se puede monetizar asi que es de uso unico y exclusivo para el proyecto de la clase, todos los derechos
 de la musica corresponden a sus correspondientes creadores.
 
-debido al motivo de que la musica tiene derechos de autor lo dejo privado
+nota 2: no me dejo subir el juego a github porque superaba el tamaño de 25mb aun comprimido el juego asi que solo el codigo puse aqui y
+el juego en privado por drive en la plataforma le puse el enlace y una imagen de prueba de que no dejo subir el juego
