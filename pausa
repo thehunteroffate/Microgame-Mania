@@ -1,0 +1,81 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
+
+public class Menupausa : MonoBehaviour
+{
+ 
+    [SerializeField] private GameObject bp;
+    [SerializeField] private GameObject mp;
+    private bool p = false;
+
+    // Referencia al script de controles generados
+    private Controles controles;
+
+    void Awake()
+    {
+        // Inicializar el script de controles
+        controles = new Controles();
+    }
+
+    void OnEnable()
+    {
+        // Habilitar el mapa de controles de pausa
+        controles.Pausa.Enable();
+        controles.Pausa2.Enable();
+
+        // Suscribirse a la acción de reanudar
+        controles.Pausa.pausaryreanudar.performed += _ => TogglePause();
+        controles.Pausa2.Pausaryreanudar.performed += _ => TogglePause();
+    }
+
+    void OnDisable()
+    {
+        // Deshabilitar el mapa de controles de pausa
+        controles.Pausa.Disable();
+
+        // Desuscribirse de la acción de reanudar
+        controles.Pausa.pausaryreanudar.performed -= _ => TogglePause();
+    }
+
+    private void Update()
+    {
+        // Verificar la entrada del teclado
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            TogglePause();
+        }
+    }
+
+    private void TogglePause()
+    {
+        if (p)
+        {
+            reanudar();
+        }
+        else
+        {
+            pausa();
+        }
+    }
+
+    public void pausa()
+    {
+        p = true;
+        Time.timeScale = 0f;
+        bp.SetActive(false);
+        mp.SetActive(true);
+    }
+
+    public void reanudar()
+    {
+        p = false;
+        Time.timeScale = 1f;
+        bp.SetActive(true);
+        mp.SetActive(false);
+    }
+
+}
