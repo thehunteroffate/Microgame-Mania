@@ -1,0 +1,72 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class P1 : MonoBehaviour
+{
+    public float velocidad;
+    private Rigidbody2D rb;
+    private Vector2 direccion;
+
+    // Referencia al script de controles generados
+    private Controles controles;
+
+    void Awake()
+    {
+    // Inicializar el codigo de controles
+    controles = new Controles();
+
+    // Asignar el dispositivo de entrada específico para el jugador 1 si hay gamepads conectados
+    if (Gamepad.all.Count > 0)
+    {
+        controles.devices = new InputDevice[] { Gamepad.all[0] }; //dependiendo del numero del corchete identifica los mandos
+    }
+   //sino detecta ningun mando por defecto usara el teclado
+    }
+
+    void OnEnable()
+    {
+        // Habilitar el mapa de controles base
+        controles.WASD.Enable();
+        controles.G2.Enable();
+
+        controles.G2.Movimiento.performed += OnMove;
+        controles.G2.Movimiento.canceled += OnMove;
+
+        controles.WASD.WADS.performed += OnMove;
+        controles.WASD.WADS.canceled += OnMove;
+    }
+
+    void OnDisable()
+    {
+        // Deshabilitar el mapa de controles base
+        controles.G2.Disable();
+
+        // Desuscribirse del evento de movimiento
+        controles.G2.Movimiento.performed -= OnMove;
+        controles.G2.Movimiento.canceled -= OnMove;
+    }
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    void FixedUpdate()
+    {
+        Mover();
+    }
+
+    void OnMove(InputAction.CallbackContext context)
+    {
+        // Actualizar la dirección con el valor del evento
+        direccion = context.ReadValue<Vector2>().normalized;
+    }
+
+    void Mover()
+    {
+        rb.velocity = direccion * velocidad;
+    }
+}
