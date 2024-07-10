@@ -1,0 +1,110 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro; // Asegúrate de incluir esto
+
+public class jugador : MonoBehaviour
+{
+    // Start is called before the first frame update
+
+    public float vida;
+
+    public GameObject Gameovercanvas;
+
+    public GameObject botonpausa;
+
+    private bool p = false;
+    public AudioClip dañoSound; // Clip de audio para el sonido de daño
+    private AudioSource audioSource; // Componente de AudioSource
+
+    public bool invencible = false; // Estado de invulnerabilidad
+
+    public TextMeshProUGUI vidaText; // Referencia al texto de la UI que muestra la vida
+
+
+    void Start()
+    {
+        // Inicializar el canvas de Game Over desactivado
+        Gameovercanvas.SetActive(false);
+
+        // Obtener o agregar el componente AudioSource al GameObject
+        audioSource = gameObject.GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.
+            AddComponent<AudioSource>();
+        }
+
+        // Actualizar el texto de la vida al inicio
+        ActualizarVidaText();
+    }
+
+    public void daño(float daño)
+    {
+        // Solo aplicar daño si el jugador no es invulnerable
+        if (!invencible)
+        {
+            // Reducir la vida del jugador
+            vida -= daño;
+
+            // Reproducir el sonido de daño
+            if (dañoSound != null)
+            {
+                audioSource.PlayOneShot(dañoSound);
+            }
+
+            // Actualizar el texto de la vida
+            ActualizarVidaText();
+
+            // Verificar si la vida del jugador es 0 o menos
+            if (vida <= 0)
+            {
+                // Destruir el objeto del jugador
+                Destroy(gameObject);
+                // Llamar al método gameover
+                gameover();
+            }
+        }
+    }
+
+    public void pausa()
+    {
+        // Pausar el juego
+        p = true;
+        Time.timeScale = 0f;
+    }
+
+    public void gameover()
+    {
+
+        // Activar el canvas de Game Over y desactivar el botón de pausa
+        Gameovercanvas.SetActive(true);
+        botonpausa.SetActive(false);
+        // Pausar el juego
+        pausa();
+        
+        vidaText.text = "";
+
+    }
+
+    public void ActivarInvulnerabilidad(float duracion)
+    {
+        StartCoroutine(InvulnerabilidadCoroutine(duracion));
+    }
+
+    private IEnumerator InvulnerabilidadCoroutine(float duracion)
+    {
+        invencible = true;
+        yield return new WaitForSeconds(duracion);
+        invencible = false;
+    }
+
+    private void ActualizarVidaText()
+    {
+        if (vidaText != null)
+        {
+            vidaText.text = "Vida: " + vida.ToString();
+        }
+    }
+
+}
