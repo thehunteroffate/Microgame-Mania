@@ -1,0 +1,33 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class bala : MonoBehaviour
+{
+
+[SerializeField] private float daño;
+
+private void OnTriggerEnter2D(Collider2D collider2D){
+
+    if(collider2D.CompareTag("enemigos")){
+
+collider2D.GetComponent<Enemigos>().dañoo(daño);
+Destroy(gameObject);
+
+    }else if(collider2D.CompareTag("meteoros")){
+
+collider2D.GetComponent<meteoro>().dañoo(daño);
+Destroy(gameObject);
+
+
+    }else if(collider2D.CompareTag("objetos")){
+
+collider2D.GetComponent<meteoro>().dañoo(daño);
+Destroy(gameObject);
+
+
+    }
+
+}
+
+}
