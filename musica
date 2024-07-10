@@ -1,0 +1,72 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
+
+public class Musicamenu : MonoBehaviour
+{
+// Etiqueta de la escena donde se reproducirá la música de fondo
+    public string[] scenesWithBackgroundMusic;
+
+    private AudioSource audioSource;
+    private static Musicamenu instance = null;
+
+    void Awake()
+    {
+        // Si ya existe una instancia de Musicamenu, destruir esta nueva instancia
+        if (instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        // Establecer esta instancia como la instancia única
+        instance = this;
+
+        // Obtener el componente AudioSource adjunto al objeto MusicManager
+        audioSource = GetComponent<AudioSource>();
+
+        // Mantener este objeto activo entre las escenas
+        DontDestroyOnLoad(gameObject);
+
+        // Manejar la música al cargar una escena
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Verificar si la escena cargada está en la lista de escenas con música de fondo
+        if (IsSceneWithBackgroundMusic(scene.name))
+        {
+            // Si la música no está reproduciéndose, comenzar a reproducirla
+            if (!audioSource.isPlaying)
+            {
+                audioSource.Play();
+            }
+        }
+        else
+        {
+            // Si la escena no está en la lista, detener la reproducción de la música
+            if (audioSource.isPlaying)
+            {
+                audioSource.Stop();
+            }
+        }
+    }
+
+    bool IsSceneWithBackgroundMusic(string sceneName)
+    {
+        // Verificar si el nombre de la escena coincide con alguna de las escenas con música de fondo
+        foreach (string scene in scenesWithBackgroundMusic)
+        {
+            if (scene == sceneName)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
+ }
