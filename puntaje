@@ -1,0 +1,96 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using System;
+using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
+using TMPro;
+using UnityEngine.EventSystems;
+
+public class Score : MonoBehaviour
+{
+
+    public int next; // índice de la siguiente escena
+    public int FS; // puntuación objetivo
+
+    private int P1S = 0; // puntuación del jugador 1
+    private int P2S = 0; // puntuación del jugador 2
+
+    public TMP_Text p1st; // texto para la puntuación del jugador 1 usando TextMeshPro
+    public TMP_Text p2st; // texto para la puntuación del jugador 2 usando TextMeshPro
+
+    public GameObject Gameovercanvas; // canvas de Game Over
+    public TMP_Text GameoverText; // texto en el canvas de Game Over usando TextMeshPro
+    public GameObject botonpausa; // botón de pausa
+
+    private bool p = false; // indicador de pausa
+
+    public string minigameId; // Identificador único para cada minijuego
+
+    public void P1G()
+    {
+        P1S++;
+        p1st.text = P1S.ToString();
+        checkS();
+    }
+
+    public void P2G()
+    {
+        P2S++;
+        p2st.text = P2S.ToString();
+        checkS();
+    }
+
+    public void pausa()
+    {
+        p = true;
+        Time.timeScale = 0f; // Pausa el tiempo del juego
+    }
+
+    private void checkS()
+    {
+        if (P1S == FS)
+        {
+            GameoverText.text = "Jugador 1 Gana!";
+            EndGame();
+        }
+        else if (P2S == FS)
+        {
+            GameoverText.text = "Jugador 2 Gana!";
+            EndGame();
+        }
+    }
+
+    private void EndGame()
+    {
+        Gameovercanvas.SetActive(true); // Activa el canvas de Game Over
+        botonpausa.SetActive(false); // Desactiva el botón de pausa
+        DesbloquearNivel(); // Desbloquea el siguiente nivel
+        pausa(); // Pausa el juego
+    }
+
+    private void DesbloquearNivel()
+    {
+        next = SceneManager.GetActiveScene().buildIndex + 1;
+        string levelKey = minigameId + "_levelat";
+
+        if (next > PlayerPrefs.GetInt(levelKey, 3)) // Establece el valor predeterminado en 3
+        {
+            PlayerPrefs.SetInt(levelKey, next);
+            PlayerPrefs.Save();
+        }
+    }
+
+    public void Start()
+    {
+        next = SceneManager.GetActiveScene().buildIndex + 1;
+    }
+
+    public void siguiente()
+    {
+        SceneManager.LoadScene(next);
+    }
+
+}
