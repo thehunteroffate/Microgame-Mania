@@ -1,0 +1,34 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+[System.Serializable]
+public class levelselection : MonoBehaviour
+{
+    public Button[] lvbutton;
+    public string minigameId; // Identificador único para cada minijuego
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        // Usa el identificador del minijuego para crear una clave única
+        int levelat = PlayerPrefs.GetInt(minigameId + "_levelat", 3);
+
+        for (int i = 0; i < lvbutton.Length; i++)
+        {
+            if (i + 3 > levelat)
+            {
+                lvbutton[i].interactable = false;
+            }
+        }
+    }
+
+    // Método para actualizar el nivel desbloqueado
+    public void UnlockLevel(int level)
+    {
+        PlayerPrefs.SetInt(minigameId + "_levelat", level);
+        PlayerPrefs.Save();
+    }
+    
+    
+}
